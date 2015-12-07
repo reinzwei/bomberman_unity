@@ -28,19 +28,25 @@ namespace Completed
 
         public int columns = 15;                                         //Number of columns in our game board.
         public int rows = 13;                                            //Number of rows in our game board.
-        public Count wallCount = new Count(5, 9);                      //Lower and upper limit for our random number of walls per level.
-        public Count foodCount = new Count(1, 5);                      //Lower and upper limit for our random number of food items per level.
+        //public Count wallCount = new Count(5, 9);                      //Lower and upper limit for our random number of walls per level.
+        //public Count foodCount = new Count(1, 5);                      //Lower and upper limit for our random number of food items per level.
         public GameObject player;
+        public GameObject[] ai;
+        public int max_enemy_count = 8;
+        
         //public GameObject exit;                                         //Prefab to spawn for exit.
         public GameObject block_undestroyable;                                 //Array of floor prefabs.
        // public GameObject[] wallTiles;                                  //Array of wall prefabs.
         public GameObject block_destroyable;                                  //Array of food prefabs.
-        //public GameObject enemy;                                 //Array of enemy prefabs.
-       // public GameObject[] outerWallTiles;                             //Array of outer tile prefabs.
+                                                                              //public GameObject enemy;                                 //Array of enemy prefabs.
+                                                                              // public GameObject[] outerWallTiles;                             //Array of outer tile prefabs.
 
+
+        private int enemy_count = 0;
         private Transform boardHolder;                                  //A variable to store a reference to the transform of our Board object.
         private List<Vector3> gridPositions = new List<Vector3>();   //A list of possible locations to place tiles.
 
+        
 
         //Clears our list gridPositions and prepares it to generate a new board.
         void InitialiseList()
@@ -64,9 +70,11 @@ namespace Completed
         //Sets up the outer walls and floor (background) of the game board.
         void BoardSetup()
         {
+            Random.seed = (int)System.DateTime.Now.Ticks;
+
             //Instantiate Board and set boardHolder to its transform.
             boardHolder = new GameObject("Board").transform;
-
+            GameObject toInstantiate = null;
             //Loop along x axis, starting from -1 (to fill corner) with floor or outerwall edge tiles.
             for (int x = -1; x < columns + 1; x++)
             {
@@ -74,32 +82,43 @@ namespace Completed
                 for (int y = -1; y < rows + 1; y++)
                 {
                     //Choose a random tile from our array of floor tile prefabs and prepare to instantiate it.
-                    GameObject toInstantiate = block_destroyable;
-
-                    //Check if we current position is at board edge, if so choose a random outer wall prefab from our array of outer wall tiles.
-                    if (x % 2 != 0 && y % 2 != 0 || x == -1 || x == columns || y == -1 || y == rows)
+                    int ran_num = Random.Range(0, 3);
+                    if (ran_num == 0 || ran_num == 1 || x == 2 && y ==12 || x == 0 && y == 10)
                     {
-                        toInstantiate = block_undestroyable;
-
-                        //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop, cast it to GameObject.
-                        GameObject instance =
-                            Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-
-                        //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
-                        instance.transform.SetParent(boardHolder);
+                        toInstantiate = block_destroyable;
                     }
-
                     if (x == 0 && y == 12)
                     {
                         toInstantiate = player;
-
-                        //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop, cast it to GameObject.
-                        GameObject instance =
-                            Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
-
-                        //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
-                        instance.transform.SetParent(boardHolder);
                     }
+                    if (x % 2 != 0 && y % 2 != 0 || x == -1 || x == columns || y == -1 || y == rows)
+                    {
+                        toInstantiate = block_undestroyable;
+                    }
+                    if (toInstantiate == null)
+                    {
+                        ran_num = Random.Range(0, 4);
+                        if (ran_num == 0 && enemy_count<max_enemy_count)
+                        {
+                            toInstantiate = ai[0];
+                            enemy_count++;
+                        }
+                    }                                                          
+                    if (x == 1 && y == 12 || x == 0 && y == 11)
+                    {
+                        toInstantiate = null;
+                    }
+                    if (toInstantiate != null)
+                    {
+                        GameObject instance =
+                           Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+                        instance.transform.SetParent(boardHolder);
+                        toInstantiate = null;
+
+                    }
+
+
+                
                 }
             }
         }
