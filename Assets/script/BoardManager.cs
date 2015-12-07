@@ -30,6 +30,7 @@ namespace Completed
         public int rows = 13;                                            //Number of rows in our game board.
         public Count wallCount = new Count(5, 9);                      //Lower and upper limit for our random number of walls per level.
         public Count foodCount = new Count(1, 5);                      //Lower and upper limit for our random number of food items per level.
+        public GameObject player;
         //public GameObject exit;                                         //Prefab to spawn for exit.
         public GameObject block_undestroyable;                                 //Array of floor prefabs.
        // public GameObject[] wallTiles;                                  //Array of wall prefabs.
@@ -76,15 +77,29 @@ namespace Completed
                     GameObject toInstantiate = block_destroyable;
 
                     //Check if we current position is at board edge, if so choose a random outer wall prefab from our array of outer wall tiles.
-                    if (x%2 != 0 && y%2 != 0 || x==-1||x==columns||y==-1||y==rows)
+                    if (x % 2 != 0 && y % 2 != 0 || x == -1 || x == columns || y == -1 || y == rows)
+                    {
                         toInstantiate = block_undestroyable;
 
-                    //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop, cast it to GameObject.
-                    GameObject instance =
-                        Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+                        //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop, cast it to GameObject.
+                        GameObject instance =
+                            Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
 
-                    //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
-                    instance.transform.SetParent(boardHolder);
+                        //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
+                        instance.transform.SetParent(boardHolder);
+                    }
+
+                    if (x == 0 && y == 12)
+                    {
+                        toInstantiate = player;
+
+                        //Instantiate the GameObject instance using the prefab chosen for toInstantiate at the Vector3 corresponding to current grid position in loop, cast it to GameObject.
+                        GameObject instance =
+                            Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+
+                        //Set the parent of our newly instantiated object instance to boardHolder, this is just organizational to avoid cluttering hierarchy.
+                        instance.transform.SetParent(boardHolder);
+                    }
                 }
             }
         }
