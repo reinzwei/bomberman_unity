@@ -3,6 +3,7 @@ using System;
 using System.Collections.Generic;       //Allows us to use Lists.
 using Random = UnityEngine.Random;      //Tells Random to use the Unity Engine random number generator.
 
+
 namespace Completed
 
 {
@@ -15,7 +16,7 @@ namespace Completed
         {
             public int minimum;             //Minimum value for our Count class.
             public int maximum;             //Maximum value for our Count class.
-
+            
 
             //Assignment constructor.
             public Count(int min, int max)
@@ -25,6 +26,7 @@ namespace Completed
             }
         }
 
+       
 
         public int columns = 15;                                         //Number of columns in our game board.
         public int rows = 13;                                            //Number of rows in our game board.
@@ -42,7 +44,7 @@ namespace Completed
                                                                               // public GameObject[] outerWallTiles;                             //Array of outer tile prefabs.
 
 
-        private int enemy_count = 0;
+        private int enemy_count;
         private Transform boardHolder;                                  //A variable to store a reference to the transform of our Board object.
         private List<Vector3> gridPositions = new List<Vector3>();   //A list of possible locations to place tiles.
 
@@ -71,6 +73,8 @@ namespace Completed
         void BoardSetup()
         {
             Random.seed = (int)System.DateTime.Now.Ticks;
+            enemy_count = 0;
+            
 
             //Instantiate Board and set boardHolder to its transform.
             boardHolder = new GameObject("Board").transform;
@@ -82,10 +86,11 @@ namespace Completed
                 for (int y = -1; y < rows + 1; y++)
                 {
                     //Choose a random tile from our array of floor tile prefabs and prepare to instantiate it.
-                    int ran_num = Random.Range(0, 3);
+                    int ran_num = Random.Range(0, 5);
                     if (ran_num == 0 || ran_num == 1 || x == 2 && y ==12 || x == 0 && y == 10)
                     {
                         toInstantiate = block_destroyable;
+                        
                     }
                     if (x == 0 && y == 12)
                     {
@@ -97,7 +102,7 @@ namespace Completed
                     }
                     if (toInstantiate == null)
                     {
-                        ran_num = Random.Range(0, 4);
+                        ran_num = Random.Range(0, 6);
                         if (ran_num == 0 && enemy_count<max_enemy_count)
                         {
                             toInstantiate = ai[0];
@@ -114,6 +119,8 @@ namespace Completed
                            Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
                         instance.transform.SetParent(boardHolder);
                         toInstantiate = null;
+                        
+
 
                     }
 
