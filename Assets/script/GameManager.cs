@@ -3,11 +3,17 @@ using System.Collections;
 
 namespace Completed
 {
+    using System;
     using System.Collections.Generic;       //Allows us to use Lists. 
     using UnityEngine.UI;                   //Allows us to use UI.
 
     public class GameManager : MonoBehaviour
     {
+
+
+        //public Canvas EndMeunCanvas;
+        //public Canvas BackScreen;
+
         public float levelStartDelay = 2f;                      //Time to wait before starting level, in seconds.
         //public float turnDelay = 0.1f;                          //Delay between each Player turn.
         public int playerLifePoints = 3;                        //Starting value for Player Life points.
@@ -16,8 +22,8 @@ namespace Completed
         //public bool playersTurn = true;       //Boolean to check if it's players turn, hidden in inspector but public.
 
 
-        private Text levelText;                                 //Text to display current level number.
-        private GameObject levelImage;                          //Image to block out level as levels are being set up, background for levelText.
+        //private Text levelText;                                 //Text to display current level number.
+        //private GameObject levelImage;                          //Image to block out level as levels are being set up, background for levelText.
         private BoardManager boardScript;                       //Store a reference to our BoardManager which will set up the level.
         private int level = 1;                                  //Current level number, expressed in game as "Day 1".
         //private List<Enemy> enemies;                          //List of all Enemy units, used to issue them move commands.
@@ -30,34 +36,38 @@ namespace Completed
         void Awake()
         {
             //Check if instance already exists
+
+            
+
             if (instance == null)
-
-                //if not, set instance to this
+            {
                 instance = this;
+                boardScript = GetComponent<BoardManager>();
+                
 
+            }
+
+            //if not, set instance to this
+            
             //If instance already exists and it's not this:
-            else if (instance != this)
-
-                //Then destroy this. This enforces our singleton pattern, meaning there can only ever be one instance of a GameManager.
+            else if (instance != null || instance != this)
                 Destroy(gameObject);
 
-            //Sets this to not be destroyed when reloading scene
-            DontDestroyOnLoad(gameObject);
-
-            //Assign enemies to a new List of Enemy objects.
-            //enemies = new List<Enemy>();
-
-            //Get a component reference to the attached BoardManager script
-            boardScript = GetComponent<BoardManager>();
+            
+          
+            
 
             //Call the InitGame function to initialize the first level 
-            InitGame();
+            
         }
 
         //This is called each time a scene is loaded.
         void OnLevelWasLoaded(int index)
         {
             //Add one to our level number.
+            Time.timeScale = 1;
+
+            //Debug.Log("FK");
             level++;
             //Call InitGame to initialize our level.
             InitGame();
@@ -88,6 +98,7 @@ namespace Completed
             //enemies.Clear();
 
             //Call the SetupScene function of the BoardManager script, pass it current level number.
+            
             boardScript.SetupScene(level);
 
         }
@@ -97,7 +108,7 @@ namespace Completed
         void HideLevelImage()
         {
             //Disable the levelImage gameObject.
-            levelImage.SetActive(false);
+            //levelImage.SetActive(false);
 
             //Set doingSetup to false allowing player to move again.
             doingSetup = false;
@@ -109,11 +120,39 @@ namespace Completed
             //Check that playersTurn or enemiesMoving or doingSetup are not currently true.
             //if (playersTurn || enemiesMoving || doingSetup)
 
-                //If any of these are true, return and do not start MoveEnemies.
-                //return;
+            //If any of these are true, return and do not start MoveEnemies.
+            //return;
 
             //Start moving enemies.
             //StartCoroutine(MoveEnemies());
+
+            if (boardScript.Enemy == null) {
+
+                Debug.Log(boardScript.Enemy[1]);
+                win();
+
+            }
+
+
+          Player player_on_field = GameObject.FindGameObjectWithTag("Player").GetComponent<Player>();
+            if (player_on_field.lifePoints == 0)
+            {
+                //GameObject.Destroy(player_on_field);
+                loss();  
+            }
+
+        }
+        void win()
+        {
+            Time.timeScale = 0.2F;
+        }
+        
+
+        void loss()
+        {
+
+            Time.timeScale = 0.0F;
+            
         }
 
         //Call this to add the passed in Enemy to the List of Enemy objects.

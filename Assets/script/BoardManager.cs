@@ -26,14 +26,14 @@ namespace Completed
             }
         }
 
-       
-
+        public GameObject[] Enemy;
+        public GameObject grass;
         public int columns = 15;                                         //Number of columns in our game board.
         public int rows = 13;                                            //Number of rows in our game board.
         //public Count wallCount = new Count(5, 9);                      //Lower and upper limit for our random number of walls per level.
         //public Count foodCount = new Count(1, 5);                      //Lower and upper limit for our random number of food items per level.
         public GameObject player;
-        public GameObject[] ai;
+        public GameObject[] ai = new GameObject[10];
         public int max_enemy_count = 8;
         
         //public GameObject exit;                                         //Prefab to spawn for exit.
@@ -106,6 +106,7 @@ namespace Completed
                         if (ran_num == 0 && enemy_count<max_enemy_count)
                         {
                             toInstantiate = ai[0];
+                            //Enemy[enemy_count] = toInstantiate;
                             enemy_count++;
                         }
                     }                                                          
@@ -113,15 +114,22 @@ namespace Completed
                     {
                         toInstantiate = null;
                     }
+                    if (toInstantiate == null || toInstantiate == player || toInstantiate == ai[0] || toInstantiate == ai[1])
+                    {
+                        GameObject instance = Instantiate(grass, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+                        instance.transform.SetParent(boardHolder);
+                    }             
+
+
                     if (toInstantiate != null)
                     {
                         GameObject instance =
                            Instantiate(toInstantiate, new Vector3(x, y, 0f), Quaternion.identity) as GameObject;
+
+
+
                         instance.transform.SetParent(boardHolder);
                         toInstantiate = null;
-                        
-
-
                     }
 
 
